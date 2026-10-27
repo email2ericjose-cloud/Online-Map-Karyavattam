@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <meta charset="utf-8">
+        <meta charset="utf-8">\n        <meta name="description" content="Explore the KHRI campus at Karyavattom with this interactive campus map.">\n        <meta name="theme-color" content="#123b35">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
         <meta name="mobile-web-app-capable" content="yes">
@@ -19,12 +19,31 @@
             padding: 0;
             margin: 0;
         }
+        
+        body { font-family: "Segoe UI", Arial, sans-serif; background: #e9eee9; }
+        .site-brand { position:absolute; z-index:1000; top:18px; left:18px; display:flex; align-items:center; gap:12px; padding:12px 18px 12px 12px; border:1px solid rgba(18,59,53,.12); border-radius:14px; background:rgba(255,255,255,.96); box-shadow:0 8px 28px rgba(15,35,31,.16); backdrop-filter:blur(10px); }
+        .brand-mark { display:grid; place-items:center; width:42px; height:42px; border-radius:11px; color:#fff; background:#123b35; font-size:14px; font-weight:800; letter-spacing:.04em; }
+        .brand-copy { display:flex; flex-direction:column; gap:3px; }
+        .brand-name { color:#173c36; font-size:14px; font-weight:750; }
+        .brand-location { color:#61736d; font-size:12px; }
+        .leaflet-top.leaflet-left { top:84px; }
+        .leaflet-control-layers, .leaflet-control-zoom, .leaflet-control-measure { border:1px solid rgba(18,59,53,.12) !important; border-radius:10px !important; overflow:hidden; box-shadow:0 4px 16px rgba(15,35,31,.14) !important; }
+        .leaflet-control-layers-toggle { width:42px !important; height:42px !important; }
+        .leaflet-control-zoom a { color:#173c36 !important; }
+        @media (max-width:600px) { .site-brand { top:12px; left:12px; padding:9px 13px 9px 9px; } .brand-mark { width:38px; height:38px; } .brand-name { font-size:13px; } .brand-location { font-size:11px; } .leaflet-top.leaflet-left { top:72px; } }
         </style>
-        <title>KHRI MAP</title>
+        <title>KHRI Campus Map | Karyavattom</title>
     </head>
     <body>
-        <div id="map">
-        </div>
+        <header class="site-brand" aria-label="KHRI Campus Map">
+            <div class="brand-mark" aria-hidden="true">KHRI</div>
+            <div class="brand-copy">
+                <span class="brand-name">KHRI Campus Map</span>
+                <span class="brand-location">Karyavattom · Thiruvananthapuram</span>
+            </div>
+        </header>
+        <main id="map" aria-label="Interactive campus map">
+        </main>
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script>
         <script src="js/L.Control.Layers.Tree.min.js"></script>
@@ -143,7 +162,7 @@
             return this._div;
         };
         title.update = function () {
-            this._div.innerHTML = '<h2>KHRI MAP</h2>';
+            this._div.innerHTML = '<h2>KHRI Campus Map</h2>';
         };
         title.addTo(map);
         var zoomControl = L.control.zoom({
