@@ -1,9 +1,11 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <meta charset="utf-8">\n        <meta name="description" content="Explore the KHRI campus at Karyavattom with this interactive campus map.">\n        <meta name="theme-color" content="#123b35">
+        <meta charset="utf-8">
+        <meta name="description" content="Explore the KHRI campus at Karyavattom with this interactive campus map.">
+        <meta name="theme-color" content="#123b35">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="stylesheet" href="css/leaflet.css">
@@ -20,28 +22,85 @@
             margin: 0;
         }
         
-        body { font-family: "Segoe UI", Arial, sans-serif; background: #e9eee9; }
-        .site-brand { position:absolute; z-index:1000; top:18px; left:18px; display:flex; align-items:center; gap:12px; padding:12px 18px 12px 12px; border:1px solid rgba(18,59,53,.12); border-radius:14px; background:rgba(255,255,255,.96); box-shadow:0 8px 28px rgba(15,35,31,.16); backdrop-filter:blur(10px); }
-        .brand-mark { display:grid; place-items:center; width:42px; height:42px; border-radius:11px; color:#fff; background:#123b35; font-size:14px; font-weight:800; letter-spacing:.04em; }
+body { font-family: "Segoe UI", Inter, Arial, sans-serif; background: #e9eee9; color:#173c36; }
+        .map-header { position:absolute; z-index:1000; top:18px; left:18px; right:18px; height:66px; display:flex; align-items:center; gap:20px; padding:0 16px; border:1px solid rgba(18,59,53,.10); border-radius:16px; background:rgba(255,255,255,.96); box-shadow:0 8px 28px rgba(15,35,31,.14); backdrop-filter:blur(12px); }
+        .brand { display:flex; align-items:center; gap:11px; color:inherit; text-decoration:none; min-width:230px; }
+        .brand-mark { display:grid; place-items:center; width:42px; height:42px; border-radius:12px; color:#fff; background:linear-gradient(145deg,#1b6256,#123b35); box-shadow:inset 0 1px rgba(255,255,255,.22); }
+        .brand-mark span { font-size:13px; font-weight:800; letter-spacing:.05em; }
         .brand-copy { display:flex; flex-direction:column; gap:3px; }
-        .brand-name { color:#173c36; font-size:14px; font-weight:750; }
-        .brand-location { color:#61736d; font-size:12px; }
-        .leaflet-top.leaflet-left { top:84px; }
+        .brand-eyebrow { color:#668078; font-size:9px; line-height:1; font-weight:800; letter-spacing:.16em; }
+        .brand-name { color:#173c36; font-size:17px; line-height:1.15; font-weight:750; letter-spacing:-.02em; }
+        .header-divider { width:1px; height:32px; background:#e4ebe7; }
+        .header-context { display:flex; align-items:center; gap:8px; margin:0; color:#6b7e77; font-size:12px; }
+        .live-dot { width:7px; height:7px; border-radius:50%; background:#4c9a72; box-shadow:0 0 0 3px rgba(76,154,114,.12); }
+        .reset-view { display:flex; align-items:center; gap:8px; margin-left:auto; padding:10px 14px; border:1px solid #dce7e2; border-radius:10px; background:#fff; color:#234940; font:600 12px "Segoe UI",Arial,sans-serif; cursor:pointer; transition:background .18s,border-color .18s,transform .18s; }
+        .reset-view:hover { background:#f2f7f4; border-color:#a9c3b8; transform:translateY(-1px); }
+        .reset-view span:first-child { font-size:17px; line-height:10px; }
+        .map-legend { position:absolute; z-index:900; left:18px; bottom:22px; width:222px; padding:16px; border:1px solid rgba(18,59,53,.10); border-radius:14px; background:rgba(255,255,255,.96); box-shadow:0 8px 28px rgba(15,35,31,.14); backdrop-filter:blur(12px); }
+        .legend-heading { display:flex; flex-direction:column; gap:4px; padding-bottom:12px; border-bottom:1px solid #edf1ef; }
+        .legend-kicker { color:#789088; font-size:9px; font-weight:800; letter-spacing:.16em; }
+        .legend-title { color:#173c36; font-size:15px; font-weight:750; }
+        .legend-items { display:grid; gap:11px; padding:13px 0 11px; }
+        .legend-items span { display:flex; align-items:center; gap:9px; color:#425b53; font-size:12px; }
+        .legend-swatch { width:10px; height:10px; border-radius:3px; }
+        .legend-swatch.buildings { background:#377eb8; }
+        .legend-swatch.roads { background:#56636a; }
+        .legend-swatch.approach { background:#e05b56; }
+        .legend-swatch.interlock { background:#4daf4a; }
+        .legend-tip { margin:0; padding-top:10px; border-top:1px solid #edf1ef; color:#81918b; font-size:10px; line-height:1.45; }
+        .map-caption { position:absolute; z-index:800; right:18px; bottom:18px; display:flex; align-items:center; gap:7px; padding:9px 12px; border:1px solid rgba(18,59,53,.10); border-radius:9px; background:rgba(255,255,255,.92); color:#566d65; font-size:11px; box-shadow:0 4px 16px rgba(15,35,31,.10); }
+        .caption-pin { color:#4c9a72; font-size:9px; }
+        .leaflet-top.leaflet-left { top:94px; }
+        .leaflet-top.leaflet-right { top:94px; right:18px; }
         .leaflet-control-layers, .leaflet-control-zoom, .leaflet-control-measure { border:1px solid rgba(18,59,53,.12) !important; border-radius:10px !important; overflow:hidden; box-shadow:0 4px 16px rgba(15,35,31,.14) !important; }
         .leaflet-control-layers-toggle { width:42px !important; height:42px !important; }
         .leaflet-control-zoom a { color:#173c36 !important; }
-        @media (max-width:600px) { .site-brand { top:12px; left:12px; padding:9px 13px 9px 9px; } .brand-mark { width:38px; height:38px; } .brand-name { font-size:13px; } .brand-location { font-size:11px; } .leaflet-top.leaflet-left { top:72px; } }
+        @media (max-width:640px) {
+            .map-header { top:10px; left:10px; right:10px; height:60px; gap:10px; padding:0 10px; border-radius:13px; }
+            .brand { min-width:0; gap:8px; }
+            .brand-mark { width:38px; height:38px; border-radius:10px; }
+            .brand-name { font-size:14px; }
+            .brand-eyebrow { font-size:8px; }
+            .header-divider, .header-context { display:none; }
+            .reset-view { padding:9px 10px; font-size:11px; }
+            .map-legend { left:10px; bottom:12px; width:178px; padding:12px; }
+            .legend-items { gap:8px; padding:10px 0 9px; }
+            .legend-items span { font-size:11px; }
+            .legend-tip { font-size:9px; }
+            .map-caption { right:10px; bottom:12px; max-width:calc(100vw - 220px); padding:8px 9px; font-size:10px; }
+            .leaflet-top.leaflet-left, .leaflet-top.leaflet-right { top:78px; }
+            .leaflet-top.leaflet-right { right:10px; }
+        }
+        @media (max-width:380px) { .map-legend { width:155px; } .map-caption { max-width:calc(100vw - 190px); font-size:9px; } .reset-view span:last-child { display:none; } } .brand-mark { width:38px; height:38px; } .brand-name { font-size:13px; } .brand-location { font-size:11px; } .leaflet-top.leaflet-left { top:72px; } }
         </style>
         <title>KHRI Campus Map | Karyavattom</title>
     </head>
     <body>
-        <header class="site-brand" aria-label="KHRI Campus Map">
-            <div class="brand-mark" aria-hidden="true">KHRI</div>
-            <div class="brand-copy">
-                <span class="brand-name">KHRI Campus Map</span>
-                <span class="brand-location">Karyavattom · Thiruvananthapuram</span>
+        <header class="map-header">
+            <div class="brand" aria-label="KHRI campus map">
+                <span class="brand-mark" aria-hidden="true"><span>KH</span></span>
+                <span class="brand-copy">
+                    <span class="brand-eyebrow">KHRI · KARYAVATTOM</span>
+                    <span class="brand-name">Campus Explorer</span>
+                </span>
             </div>
+            <div class="header-divider" aria-hidden="true"></div>
+            <p class="header-context"><span class="live-dot" aria-hidden="true"></span> Interactive campus map</p>
+            <button class="reset-view" type="button" onclick="map.fitBounds([[8.565597710366344,76.88376313002591],[8.566806329041661,76.88559233419984]])">
+                <span aria-hidden="true">⌖</span><span>Reset view</span>
+            </button>
         </header>
+        <aside class="map-legend" aria-label="Map guide">
+            <div class="legend-heading"><span class="legend-kicker">EXPLORE</span><span class="legend-title">Map guide</span></div>
+            <div class="legend-items">
+                <span><i class="legend-swatch buildings"></i>Buildings</span>
+                <span><i class="legend-swatch roads"></i>Roads</span>
+                <span><i class="legend-swatch approach"></i>Approach road</span>
+                <span><i class="legend-swatch interlock"></i>Interlock</span>
+            </div>
+            <p class="legend-tip">Select a feature on the map for details</p>
+        </aside>
+        <div class="map-caption"><span class="caption-pin" aria-hidden="true">●</span> Karyavattom, Thiruvananthapuram</div>
         <main id="map" aria-label="Interactive campus map">
         </main>
         <script src="js/qgis2web_expressions.js"></script>
