@@ -15,93 +15,163 @@
         <link rel="stylesheet" href="css/leaflet.photon.css">
         <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
-        html, body, #map {
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            margin: 0;
-        }
-        
-body { font-family: "Segoe UI", Inter, Arial, sans-serif; background: #e9eee9; color:#173c36; }
-        .map-header { position:absolute; z-index:1000; top:18px; left:18px; right:18px; height:66px; display:flex; align-items:center; gap:20px; padding:0 16px; border:1px solid rgba(18,59,53,.10); border-radius:16px; background:rgba(255,255,255,.96); box-shadow:0 8px 28px rgba(15,35,31,.14); backdrop-filter:blur(12px); }
-        .brand { display:flex; align-items:center; gap:11px; color:inherit; text-decoration:none; min-width:230px; }
-        .brand-mark { display:grid; place-items:center; width:42px; height:42px; border-radius:12px; color:#fff; background:linear-gradient(145deg,#1b6256,#123b35); box-shadow:inset 0 1px rgba(255,255,255,.22); }
-        .brand-mark span { font-size:13px; font-weight:800; letter-spacing:.05em; }
+        * { box-sizing: border-box; }
+        html, body { width:100%; height:100%; padding:0; margin:0; overflow:hidden; }
+        body { background:#0f172a; color:#e5e7eb; font-family:Inter,"Segoe UI",Arial,sans-serif; }
+        .topbar { height:64px; display:flex; align-items:center; background:#1e293b; border-bottom:1px solid #334155; }
+        .topbar-inner { width:min(1280px,100%); margin:auto; padding:0 24px; display:flex; align-items:center; gap:14px; }
+        .brand-mark { display:grid; place-items:center; width:44px; height:44px; border-radius:11px; color:#fff; background:#5145e5; box-shadow:0 6px 16px rgba(79,70,229,.25); font-size:13px; font-weight:850; letter-spacing:.02em; }
         .brand-copy { display:flex; flex-direction:column; gap:3px; }
-        .brand-eyebrow { color:#668078; font-size:9px; line-height:1; font-weight:800; letter-spacing:.16em; }
-        .brand-name { color:#173c36; font-size:17px; line-height:1.15; font-weight:750; letter-spacing:-.02em; }
-        .header-divider { width:1px; height:32px; background:#e4ebe7; }
-        .header-context { display:flex; align-items:center; gap:8px; margin:0; color:#6b7e77; font-size:12px; }
-        .live-dot { width:7px; height:7px; border-radius:50%; background:#4c9a72; box-shadow:0 0 0 3px rgba(76,154,114,.12); }
-        .reset-view { display:flex; align-items:center; gap:8px; margin-left:auto; padding:10px 14px; border:1px solid #dce7e2; border-radius:10px; background:#fff; color:#234940; font:600 12px "Segoe UI",Arial,sans-serif; cursor:pointer; transition:background .18s,border-color .18s,transform .18s; }
-        .reset-view:hover { background:#f2f7f4; border-color:#a9c3b8; transform:translateY(-1px); }
-        .reset-view span:first-child { font-size:17px; line-height:10px; }
-        .map-legend { position:absolute; z-index:900; left:18px; bottom:22px; width:222px; padding:16px; border:1px solid rgba(18,59,53,.10); border-radius:14px; background:rgba(255,255,255,.96); box-shadow:0 8px 28px rgba(15,35,31,.14); backdrop-filter:blur(12px); }
-        .legend-heading { display:flex; flex-direction:column; gap:4px; padding-bottom:12px; border-bottom:1px solid #edf1ef; }
-        .legend-kicker { color:#789088; font-size:9px; font-weight:800; letter-spacing:.16em; }
-        .legend-title { color:#173c36; font-size:15px; font-weight:750; }
-        .legend-items { display:grid; gap:11px; padding:13px 0 11px; }
-        .legend-items span { display:flex; align-items:center; gap:9px; color:#425b53; font-size:12px; }
-        .legend-swatch { width:10px; height:10px; border-radius:3px; }
-        .legend-swatch.buildings { background:#377eb8; }
-        .legend-swatch.roads { background:#56636a; }
-        .legend-swatch.approach { background:#e05b56; }
-        .legend-swatch.interlock { background:#4daf4a; }
-        .legend-tip { margin:0; padding-top:10px; border-top:1px solid #edf1ef; color:#81918b; font-size:10px; line-height:1.45; }
-        .map-caption { position:absolute; z-index:800; right:18px; bottom:18px; display:flex; align-items:center; gap:7px; padding:9px 12px; border:1px solid rgba(18,59,53,.10); border-radius:9px; background:rgba(255,255,255,.92); color:#566d65; font-size:11px; box-shadow:0 4px 16px rgba(15,35,31,.10); }
-        .caption-pin { color:#4c9a72; font-size:9px; }
-        .leaflet-top.leaflet-left { top:94px; }
-        .leaflet-top.leaflet-right { top:94px; right:18px; }
-        .leaflet-control-layers, .leaflet-control-zoom, .leaflet-control-measure { border:1px solid rgba(18,59,53,.12) !important; border-radius:10px !important; overflow:hidden; box-shadow:0 4px 16px rgba(15,35,31,.14) !important; }
-        .leaflet-control-layers-toggle { width:42px !important; height:42px !important; }
-        .leaflet-control-zoom a { color:#173c36 !important; }
-        @media (max-width:640px) {
-            .map-header { top:10px; left:10px; right:10px; height:60px; gap:10px; padding:0 10px; border-radius:13px; }
-            .brand { min-width:0; gap:8px; }
-            .brand-mark { width:38px; height:38px; border-radius:10px; }
-            .brand-name { font-size:14px; }
-            .brand-eyebrow { font-size:8px; }
-            .header-divider, .header-context { display:none; }
-            .reset-view { padding:9px 10px; font-size:11px; }
-            .map-legend { left:10px; bottom:12px; width:178px; padding:12px; }
-            .legend-items { gap:8px; padding:10px 0 9px; }
-            .legend-items span { font-size:11px; }
-            .legend-tip { font-size:9px; }
-            .map-caption { right:10px; bottom:12px; max-width:calc(100vw - 220px); padding:8px 9px; font-size:10px; }
-            .leaflet-top.leaflet-left, .leaflet-top.leaflet-right { top:78px; }
-            .leaflet-top.leaflet-right { right:10px; }
+        .brand-name { color:#f8fafc; font-size:16px; line-height:1.1; font-weight:750; letter-spacing:-.02em; }
+        .brand-location { color:#94a3b8; font-size:11px; }
+        .topbar-meta { margin-left:4px; padding-left:16px; border-left:1px solid #475569; color:#94a3b8; font-size:11px; }
+        .topbar-actions { margin-left:auto; display:flex; align-items:center; gap:10px; }
+        .map-status { display:flex; align-items:center; gap:7px; padding:7px 11px; border:1px solid #065f46; border-radius:999px; background:#052e2b; color:#34d399; font-size:10px; font-weight:650; white-space:nowrap; }
+        .status-dot { width:7px; height:7px; border-radius:50%; background:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,.14); }
+        .reset-view { display:flex; align-items:center; gap:7px; padding:9px 12px; border:1px solid #4f46e5; border-radius:8px; background:#4f46e5; color:#fff; font:650 11px Inter,"Segoe UI",Arial,sans-serif; cursor:pointer; transition:background .18s,transform .18s; }
+        .reset-view:hover { background:#4338ca; transform:translateY(-1px); }
+        .dashboard { width:min(1280px,100%); height:calc(100vh - 64px); margin:0 auto; padding:20px 24px 24px; overflow:auto; }
+        .overview-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+        .overview-card { min-height:86px; padding:13px 15px; border:1px solid #334155; border-radius:9px; background:#1e293b; }
+        .card-label { color:#9fb2cb; font-size:9px; font-weight:700; letter-spacing:.055em; text-transform:uppercase; }
+        .card-value { margin-top:7px; color:#f8fafc; font-size:21px; line-height:1; font-weight:760; letter-spacing:-.035em; }
+        .card-detail { margin-top:6px; color:#94a3b8; font-size:10px; }
+        .accent-cyan { color:#38bdf8; } .accent-indigo { color:#818cf8; } .accent-amber { color:#fbbf24; } .accent-green { color:#34d399; }
+        .section-nav { display:flex; align-items:stretch; gap:0; height:50px; margin:14px 0 18px; border-bottom:1px solid #334155; }
+        .nav-tab { position:relative; display:flex; align-items:center; gap:9px; padding:0 18px; border:0; background:transparent; color:#94a3b8; font:550 12px Inter,"Segoe UI",Arial,sans-serif; cursor:pointer; }
+        .nav-tab:hover { color:#c7d2fe; }
+        .nav-tab.active { color:#a5b4fc; }
+        .nav-tab.active::after { content:""; position:absolute; right:0; bottom:-1px; left:0; height:2px; background:#6366f1; }
+        .nav-icon { color:#818cf8; font-size:15px; }
+        .nav-hint { align-self:center; margin-left:auto; color:#64748b; font-size:10px; }
+        .map-panel { overflow:hidden; border:1px solid #334155; border-radius:11px; background:#1e293b; box-shadow:0 12px 34px rgba(2,6,23,.18); }
+        .map-panel-head { min-height:61px; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 18px; border-bottom:1px solid #334155; }
+        .panel-heading { display:flex; flex-direction:column; gap:4px; }
+        .panel-title { color:#f1f5f9; font-size:13px; font-weight:700; }
+        .panel-description { color:#94a3b8; font-size:10px; }
+        .map-tags { display:flex; align-items:center; gap:7px; }
+        .map-tag { padding:6px 9px; border:1px solid #3b4960; border-radius:6px; background:#263449; color:#cbd5e1; font-size:9px; white-space:nowrap; }
+        .map-tag strong { color:#a5b4fc; font-weight:650; }
+        .map-stage { position:relative; height:clamp(390px,calc(100vh - 355px),570px); background:#162131; }
+        #map { width:100%; height:100%; padding:0; margin:0; background:#162131; }
+        .map-legend { position:absolute; z-index:900; left:16px; bottom:16px; width:206px; padding:13px 14px; border:1px solid #475569; border-radius:9px; background:rgba(15,23,42,.94); box-shadow:0 8px 24px rgba(2,6,23,.35); backdrop-filter:blur(9px); }
+        .legend-heading { display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding-bottom:10px; border-bottom:1px solid #334155; }
+        .legend-kicker { color:#818cf8; font-size:8px; font-weight:800; letter-spacing:.14em; }
+        .legend-title { color:#e2e8f0; font-size:12px; font-weight:700; }
+        .legend-items { display:grid; grid-template-columns:1fr 1fr; gap:10px 8px; padding:11px 0 9px; }
+        .legend-items span { display:flex; align-items:center; gap:7px; color:#cbd5e1; font-size:9px; white-space:nowrap; }
+        .legend-swatch { width:9px; height:9px; flex:none; border-radius:3px; }
+        .legend-swatch.buildings { background:#377eb8; } .legend-swatch.roads { background:#7c8796; } .legend-swatch.approach { background:#e05b56; } .legend-swatch.interlock { background:#4daf4a; }
+        .legend-tip { margin:0; padding-top:8px; border-top:1px solid #334155; color:#94a3b8; font-size:9px; line-height:1.4; }
+        .map-caption { position:absolute; z-index:800; right:14px; bottom:14px; display:flex; align-items:center; gap:7px; padding:7px 10px; border:1px solid #475569; border-radius:7px; background:rgba(15,23,42,.90); color:#cbd5e1; font-size:9px; }
+        .caption-pin { color:#34d399; font-size:8px; }
+        .leaflet-top.leaflet-left { top:12px; left:12px; }
+        .leaflet-top.leaflet-right { top:12px; right:12px; }
+        .leaflet-bar, .leaflet-control-layers { overflow:hidden; border:1px solid #475569 !important; border-radius:8px !important; background:#1e293b !important; box-shadow:0 6px 18px rgba(2,6,23,.3) !important; color:#e2e8f0 !important; }
+        .leaflet-bar a, .leaflet-bar a:hover { border-bottom:1px solid #334155 !important; background:#1e293b !important; color:#cbd5e1 !important; }
+        .leaflet-bar a:hover { background:#334155 !important; color:#fff !important; }
+        .leaflet-control-layers-toggle { width:38px !important; height:38px !important; background-color:#1e293b !important; }
+        .leaflet-control-layers-separator { border-top:1px solid #475569 !important; }
+        .leaflet-control-layers label { color:#e2e8f0; }
+        .leaflet-control-measure .leaflet-control-measure-toggle { background-color:#1e293b !important; }
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip { background:#1e293b; color:#e2e8f0; }
+        .leaflet-popup-content { color:#e2e8f0; }
+        .leaflet-popup-content th { color:#a5b4fc; }
+        .leaflet-container a.leaflet-popup-close-button { color:#cbd5e1; }
+        @media (max-width:800px) {
+            .topbar { height:60px; } .topbar-inner { padding:0 14px; gap:10px; }
+            .brand-mark { width:38px; height:38px; } .brand-name { font-size:14px; } .brand-location { font-size:10px; }
+            .topbar-meta { display:none; } .map-status { display:none; }
+            .dashboard { height:calc(100vh - 60px); padding:14px; }
+            .overview-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+            .overview-card { min-height:73px; padding:10px 12px; }
+            .card-value { margin-top:5px; font-size:18px; } .card-detail { margin-top:4px; font-size:9px; }
+            .section-nav { height:43px; margin:10px 0 12px; }
+            .nav-tab { padding:0 12px; font-size:11px; }
+            .nav-hint { display:none; }
+            .map-panel-head { min-height:54px; padding:10px 12px; }
+            .panel-title { font-size:12px; } .panel-description { font-size:9px; }
+            .map-tag { padding:5px 7px; font-size:8px; }
+            .map-stage { height:clamp(350px,calc(100vh - 330px),560px); }
         }
-        @media (max-width:380px) { .map-legend { width:155px; } .map-caption { max-width:calc(100vw - 190px); font-size:9px; } .reset-view span:last-child { display:none; } } .brand-mark { width:38px; height:38px; } .brand-name { font-size:13px; } .brand-location { font-size:11px; } .leaflet-top.leaflet-left { top:72px; } }
+        @media (max-width:520px) {
+            .topbar-inner { padding:0 11px; }
+            .brand-mark { width:35px; height:35px; }
+            .brand-name { font-size:13px; }
+            .reset-view { padding:8px 9px; font-size:10px; }
+            .overview-grid { gap:7px; }
+            .overview-card { min-height:70px; padding:9px 10px; }
+            .card-label { font-size:8px; } .card-value { font-size:17px; }
+            .section-nav { justify-content:space-between; }
+            .nav-tab { gap:6px; padding:0 7px; font-size:10px; }
+            .map-panel-head { align-items:flex-start; }
+            .map-tags { flex-direction:column; align-items:flex-end; gap:5px; }
+            .map-stage { height:calc(100vh - 385px); min-height:330px; }
+            .map-legend { left:9px; bottom:9px; width:178px; padding:10px; }
+            .legend-items { gap:8px 5px; }
+            .legend-items span { font-size:8px; }
+            .map-caption { right:8px; bottom:8px; font-size:8px; }
+            .leaflet-top.leaflet-left { left:8px; top:8px; }
+            .leaflet-top.leaflet-right { right:8px; top:8px; }
+        }
+        @media (max-height:720px) and (min-width:801px) {
+            .dashboard { padding-top:12px; }
+            .overview-card { min-height:72px; padding:10px 13px; }
+            .section-nav { height:42px; margin:9px 0 11px; }
+            .map-panel-head { min-height:50px; }
+            .map-stage { height:calc(100vh - 300px); min-height:300px; }
+        }
         </style>
         <title>KHRI Campus Map | Karyavattom</title>
     </head>
     <body>
-        <header class="map-header">
-            <div class="brand" aria-label="KHRI campus map">
-                <span class="brand-mark" aria-hidden="true"><span>KH</span></span>
-                <span class="brand-copy">
-                    <span class="brand-eyebrow">KHRI · KARYAVATTOM</span>
+        <header class="topbar">
+            <div class="topbar-inner">
+                <div class="brand-mark" aria-hidden="true">KHRI</div>
+                <div class="brand-copy">
                     <span class="brand-name">Campus Explorer</span>
-                </span>
+                    <span class="brand-location">Karyavattom · Thiruvananthapuram</span>
+                </div>
+                <div class="topbar-meta">Interactive campus map</div>
+                <div class="topbar-actions">
+                    <span class="map-status"><i class="status-dot"></i> Map ready to explore</span>
+                    <button class="reset-view" type="button" onclick="map.fitBounds([[8.565597710366344,76.88376313002591],[8.566806329041661,76.88559233419984]])"><span aria-hidden="true">⌖</span> Reset view</button>
+                </div>
             </div>
-            <div class="header-divider" aria-hidden="true"></div>
-            <p class="header-context"><span class="live-dot" aria-hidden="true"></span> Interactive campus map</p>
-            <button class="reset-view" type="button" onclick="map.fitBounds([[8.565597710366344,76.88376313002591],[8.566806329041661,76.88559233419984]])">
-                <span aria-hidden="true">⌖</span><span>Reset view</span>
-            </button>
         </header>
-        <aside class="map-legend" aria-label="Map guide">
-            <div class="legend-heading"><span class="legend-kicker">EXPLORE</span><span class="legend-title">Map guide</span></div>
-            <div class="legend-items">
-                <span><i class="legend-swatch buildings"></i>Buildings</span>
-                <span><i class="legend-swatch roads"></i>Roads</span>
-                <span><i class="legend-swatch approach"></i>Approach road</span>
-                <span><i class="legend-swatch interlock"></i>Interlock</span>
-            </div>
-            <p class="legend-tip">Select a feature on the map for details</p>
-        </aside>
-        <div class="map-caption"><span class="caption-pin" aria-hidden="true">●</span> Karyavattom, Thiruvananthapuram</div>
-        <main id="map" aria-label="Interactive campus map">
+        <main class="dashboard">
+            <section class="overview-grid" aria-label="Map overview">
+                <article class="overview-card"><div class="card-label">Feature layers</div><div class="card-value accent-cyan">04</div><div class="card-detail">Campus features to explore</div></article>
+                <article class="overview-card"><div class="card-label">Satellite basemap</div><div class="card-value accent-indigo">01</div><div class="card-detail">Google Satellite imagery</div></article>
+                <article class="overview-card"><div class="card-label">Measurement tools</div><div class="card-value accent-amber">02</div><div class="card-detail">Distance and area</div></article>
+                <article class="overview-card"><div class="card-label">Feature details</div><div class="card-value accent-green">Click</div><div class="card-detail">Select a mapped feature</div></article>
+            </section>
+            <nav class="section-nav" aria-label="Map sections">
+                <button class="nav-tab active" type="button" data-action="overview"><span class="nav-icon" aria-hidden="true">◉</span> Overview &amp; Map</button>
+                <button class="nav-tab" type="button" data-action="layers"><span class="nav-icon" aria-hidden="true">◈</span> Layers &amp; Basemap</button>
+                <button class="nav-tab" type="button" data-action="measure"><span class="nav-icon" aria-hidden="true">⌁</span> Measure</button>
+                <span class="nav-hint">Choose a layer, then select a feature to inspect it</span>
+            </nav>
+            <section class="map-panel" aria-label="Interactive campus map">
+                <div class="map-panel-head">
+                    <div class="panel-heading"><span class="panel-title">Campus map</span><span class="panel-description">Explore buildings, access routes, and campus surfaces</span></div>
+                    <div class="map-tags"><span class="map-tag"><strong>BASEMAP</strong> &nbsp;Satellite</span><span class="map-tag"><strong>LOCATION</strong> &nbsp;Karyavattom</span></div>
+                </div>
+                <div class="map-stage">
+                    <main id="map" aria-label="Interactive satellite campus map"></main>
+                    <aside class="map-legend" aria-label="Map guide">
+                        <div class="legend-heading"><span class="legend-kicker">EXPLORE</span><span class="legend-title">Map guide</span></div>
+                        <div class="legend-items">
+                            <span><i class="legend-swatch buildings"></i>Buildings</span>
+                            <span><i class="legend-swatch roads"></i>Roads</span>
+                            <span><i class="legend-swatch approach"></i>Approach road</span>
+                            <span><i class="legend-swatch interlock"></i>Interlock</span>
+                        </div>
+                        <p class="legend-tip">Select a feature on the map for details</p>
+                    </aside>
+                    <div class="map-caption"><span class="caption-pin" aria-hidden="true">●</span> Karyavattom, Thiruvananthapuram</div>
+                </div>
+            </section>
         </main>
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script>
@@ -602,6 +672,26 @@ body { font-family: "Segoe UI", Inter, Arial, sans-serif; background: #e9eee9; c
         map.on("layerremove", function(){
             resetLabels([layer_INTERLOCK_1]);
         });
-        </script>        
+        
+        document.querySelectorAll('.nav-tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.nav-tab').forEach(function(item) {
+                    item.classList.remove('active');
+                    item.setAttribute('aria-current', 'false');
+                });
+                tab.classList.add('active');
+                tab.setAttribute('aria-current', 'page');
+                if (tab.dataset.action === 'overview') {
+                    map.fitBounds([[8.565597710366344,76.88376313002591],[8.566806329041661,76.88559233419984]]);
+                } else if (tab.dataset.action === 'layers') {
+                    var layerToggle = document.querySelector('.leaflet-control-layers-toggle');
+                    if (layerToggle) layerToggle.click();
+                } else if (tab.dataset.action === 'measure') {
+                    var measureToggle = document.querySelector('.leaflet-control-measure-toggle');
+                    if (measureToggle) measureToggle.click();
+                }
+            });
+        });
+</script>        
     </body>
 </html>
